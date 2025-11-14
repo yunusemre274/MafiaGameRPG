@@ -1,0 +1,20 @@
+{
+  "player": {
+    "money": 35,
+    "hp": 100,
+    "hunger": 100,
+    "level": 1,
+    "xp": 12,
+    "bodyguards": 0,
+    "gang_members": 0,
+    "total_actions": 3,
+    "casino_wins": 0,
+    "casino_losses": 4,
+    "mini_games_completed": [
+      "card_memory"
+    ]
+  },
+  "inventory": [],
+  "mafia_active": false,
+  "current_page": "main_menu"
+}
