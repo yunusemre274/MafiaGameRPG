@@ -161,13 +161,13 @@ def render_blackjack():
                 player.casino_losses += 1
             elif st.session_state.bj_result == "dealer_bust":
                 winnings = st.session_state.bj_bet * 2
-                show_success(f"Dealer BUST! You won ${winnings}!")
+                show_success(f"Dealer BUST! You won ${st.session_state.bj_bet} profit!")
                 player.add_money(winnings)
                 player.casino_wins += 1
                 player.add_xp(15)
             elif st.session_state.bj_result == "player_win":
                 winnings = st.session_state.bj_bet * 2
-                show_success(f"You WIN! Won ${winnings}!")
+                show_success(f"You WIN! Won ${st.session_state.bj_bet} profit!")
                 player.add_money(winnings)
                 player.casino_wins += 1
                 player.add_xp(15)

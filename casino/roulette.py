@@ -53,6 +53,9 @@ def render_roulette():
     
     with col1:
         if st.button("🎰 Spin Roulette", use_container_width=True):
+            # Deduct bet upfront
+            player.remove_money(bet_amount)
+            
             result_number = random.randint(0, 36)
             st.session_state.roulette_number = result_number
             
@@ -67,15 +70,15 @@ def render_roulette():
             if "Number" in bet_type:
                 if bet_choice == result_number:
                     won = True
-                    multiplier = 35
+                    multiplier = 36  # Return bet + 35x profit
             elif "Red/Black" in bet_type:
                 if bet_choice == result_color:
                     won = True
-                    multiplier = 2
+                    multiplier = 2  # Return bet + 1x profit
             else:
                 if bet_choice == result_parity:
                     won = True
-                    multiplier = 2
+                    multiplier = 2  # Return bet + 1x profit
             
             player.reduce_hunger(5)
             mark_significant_action()  # Mark for mafia event check
@@ -85,10 +88,10 @@ def render_roulette():
                 player.add_money(winnings)
                 player.casino_wins += 1
                 player.add_xp(20)
-                st.session_state.roulette_result = f"✅ Number: {result_number} ({result_color}) - YOU WIN ${winnings}!"
+                profit = winnings - bet_amount
+                st.session_state.roulette_result = f"✅ Number: {result_number} ({result_color}) - YOU WIN ${profit} profit!"
                 show_success(st.session_state.roulette_result)
             else:
-                player.remove_money(bet_amount)
                 player.casino_losses += 1
                 st.session_state.roulette_result = f"❌ Number: {result_number} ({result_color}) - You lost ${bet_amount}"
                 show_error(st.session_state.roulette_result)

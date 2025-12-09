@@ -38,6 +38,9 @@ def render_dice():
     
     with col1:
         if st.button("🎲 Roll Dice", use_container_width=True):
+            # Deduct bet upfront
+            player.remove_money(bet_amount)
+            
             dice1 = random.randint(1, 6)
             dice2 = random.randint(1, 6)
             total = dice1 + dice2
@@ -48,21 +51,20 @@ def render_dice():
             mark_significant_action()  # Mark for mafia event check
             
             if total == bet_number:
-                # Exact match
-                winnings = bet_amount * 10
+                # Exact match - return bet + 10x profit
+                winnings = bet_amount * 11  # Original bet + 10x profit
                 player.add_money(winnings)
                 player.casino_wins += 1
                 player.add_xp(25)
-                show_success(f"🎉 EXACT MATCH! Rolled {dice1} + {dice2} = {total}. Won ${winnings}!")
+                show_success(f"🎉 EXACT MATCH! Rolled {dice1} + {dice2} = {total}. Won ${winnings - bet_amount} profit!")
             elif abs(total - bet_number) == 1:
-                # Close match
-                winnings = bet_amount * 3
+                # Close match - return bet + 2x profit
+                winnings = bet_amount * 3  # Original bet + 2x profit
                 player.add_money(winnings)
                 player.casino_wins += 1
                 player.add_xp(10)
-                show_info(f"Close! Rolled {dice1} + {dice2} = {total}. Won ${winnings}!")
+                show_info(f"Close! Rolled {dice1} + {dice2} = {total}. Won ${winnings - bet_amount} profit!")
             else:
-                player.remove_money(bet_amount)
                 player.casino_losses += 1
                 show_error(f"Lost! Rolled {dice1} + {dice2} = {total}. Lost ${bet_amount}.")
             

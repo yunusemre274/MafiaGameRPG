@@ -43,6 +43,9 @@ def render_horse_racing():
     
     with col1:
         if st.button("🏁 Start Race", use_container_width=True):
+            # Deduct bet upfront
+            player.remove_money(bet_amount)
+            
             # Simulate race
             st.markdown("### 🏁 Race in Progress...")
             
@@ -68,14 +71,15 @@ def render_horse_racing():
             mark_significant_action()  # Mark for mafia event check
             
             if winner == chosen_horse:
+                # Return bet + 2x profit
                 winnings = bet_amount * 3
                 player.add_money(winnings)
                 player.casino_wins += 1
                 player.add_xp(20)
-                st.session_state.race_result = f"✅ {winner} WINS! You won ${winnings}!"
+                profit = winnings - bet_amount
+                st.session_state.race_result = f"✅ {winner} WINS! You won ${profit} profit!"
                 show_success(st.session_state.race_result)
             else:
-                player.remove_money(bet_amount)
                 player.casino_losses += 1
                 st.session_state.race_result = f"❌ {winner} wins. You lost ${bet_amount}."
                 show_error(st.session_state.race_result)
