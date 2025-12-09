@@ -1,14 +1,24 @@
 """Dice (Zar) casino game."""
 import streamlit as st
 import random
-from game_state import get_player, check_death_conditions, navigate_to
-from ui_components import render_section_header, show_success, show_error, show_info
+from game_state import get_player, check_death_conditions, navigate_to, mark_significant_action
+from ui_components import render_section_header, show_success, show_error, show_info, render_money_bar
 
 def render_dice():
     """Render the dice game."""
     render_section_header("Dice Game (Zar)", "🎲")
     
     player = get_player()
+    
+    # Always show money bar
+    render_money_bar()
+    
+    # Check if player has enough money
+    if player.money < 10:
+        st.warning("💸 You need at least $10 to play Dice! Try Street Jobs to earn some money.")
+        if st.button("🏠 Back to Casino", use_container_width=True):
+            navigate_to("casino")
+        return
     
     st.markdown("### How to Play")
     st.info("Roll 2 dice and bet on the total sum (2-12). Exact match: 10x, Close (±1): 3x")
@@ -35,6 +45,7 @@ def render_dice():
             st.session_state.dice_result = (dice1, dice2, total)
             
             player.reduce_hunger(5)
+            mark_significant_action()  # Mark for mafia event check
             
             if total == bet_number:
                 # Exact match

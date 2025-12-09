@@ -2,8 +2,8 @@
 import streamlit as st
 import random
 import time
-from game_state import get_player, check_death_conditions, navigate_to
-from ui_components import render_section_header, show_success, show_error
+from game_state import get_player, check_death_conditions, navigate_to, mark_significant_action
+from ui_components import render_section_header, show_success, show_error, render_money_bar
 
 def render_horse_racing():
     """Render the horse racing game."""
@@ -11,7 +11,17 @@ def render_horse_racing():
     
     player = get_player()
     
+    # Always show money bar
+    render_money_bar()
+    
     horses = ["🐴 Thunder", "🐎 Lightning", "🦄 Sparkle", "🏇 Flash", "🐴 Storm"]
+    
+    # Check if player has enough money
+    if player.money < 10:
+        st.warning("💸 You need at least $10 to play Horse Racing! Try Street Jobs to earn some money.")
+        if st.button("🏠 Back to Casino", use_container_width=True):
+            navigate_to("casino")
+        return
     
     if 'race_result' not in st.session_state:
         st.session_state.race_result = None
@@ -55,6 +65,7 @@ def render_horse_racing():
             winner = max(speeds, key=speeds.get)
             
             player.reduce_hunger(5)
+            mark_significant_action()  # Mark for mafia event check
             
             if winner == chosen_horse:
                 winnings = bet_amount * 3

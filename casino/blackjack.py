@@ -1,8 +1,8 @@
 """Blackjack casino game."""
 import streamlit as st
 import random
-from game_state import get_player, check_death_conditions, navigate_to
-from ui_components import render_section_header, show_success, show_error, show_info
+from game_state import get_player, check_death_conditions, navigate_to, mark_significant_action
+from ui_components import render_section_header, show_success, show_error, show_info, render_money_bar
 
 class Card:
     def __init__(self, suit, rank):
@@ -44,6 +44,9 @@ def render_blackjack():
     
     player = get_player()
     
+    # Always show money bar
+    render_money_bar()
+    
     # Initialize game state
     if 'bj_game_active' not in st.session_state:
         st.session_state.bj_game_active = False
@@ -59,7 +62,7 @@ def render_blackjack():
         
         # Check if player has enough money
         if player.money < 10:
-            show_error("You need at least $10 to play Blackjack!")
+            st.warning("💸 You need at least $10 to play Blackjack! Try Street Jobs to earn some money.")
             if st.button("🏠 Back to Casino", use_container_width=True):
                 navigate_to("casino")
             return
@@ -85,6 +88,7 @@ def render_blackjack():
                 st.session_state.bj_game_active = True
                 st.session_state.bj_game_over = False
                 player.reduce_hunger(5)
+                mark_significant_action()  # Mark for mafia event check
                 st.rerun()
         
         with col2:

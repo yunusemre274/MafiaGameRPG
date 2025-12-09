@@ -22,6 +22,9 @@ def initialize_game_state():
         st.session_state.roulette_state = {}
         st.session_state.dice_state = {}
         st.session_state.horse_state = {}
+        
+        # Flag to track if a significant action was performed (for mafia event triggering)
+        st.session_state.significant_action_performed = False
 
 def navigate_to(page):
     """Navigate to a different page."""
@@ -55,3 +58,7 @@ def activate_mafia_if_needed():
         st.session_state.mafia_active = True
         return True
     return False
+
+def mark_significant_action():
+    """Mark that a significant action was performed (triggers mafia check)."""
+    st.session_state.significant_action_performed = True

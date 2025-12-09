@@ -98,6 +98,18 @@ def render_section_header(title, emoji=""):
     st.markdown(f"### {header_text}")
     st.markdown("---")
 
+def render_money_bar():
+    """Render a compact money display bar for use in casino games."""
+    player = get_player()
+    st.markdown(f"""
+        <div style='background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                    padding: 10px 20px; border-radius: 8px; margin-bottom: 15px;
+                    color: white; font-size: 20px; font-weight: bold; text-align: center;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);'>
+            💰 Your Money: ${player.money:,}
+        </div>
+    """, unsafe_allow_html=True)
+
 def render_hunger_warning():
     """Show warning if hunger is low."""
     player = get_player()

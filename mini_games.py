@@ -1,7 +1,7 @@
 """Safe mini-games for earning money through skill and logic."""
 import streamlit as st
 import random
-from game_state import get_player, navigate_to
+from game_state import get_player, navigate_to, mark_significant_action
 from ui_components import render_section_header, show_success, show_error, show_info
 
 def render_mini_games():
@@ -134,6 +134,7 @@ def render_card_memory():
         player.add_money(50)
         player.add_xp(10)
         player.mini_games_completed.add("card_memory")
+        mark_significant_action()  # Mark for mafia event check
         show_success(f"🎉 You won $50! (Completed in {st.session_state.cm_attempts} attempts)")
     
     # Display cards in 4x4 grid
@@ -246,6 +247,7 @@ def render_math_challenge():
             player.add_money(reward)
             player.add_xp(5)
             player.mini_games_completed.add("math_challenge")
+            mark_significant_action()  # Mark for mafia event check
         else:
             show_error("You need at least 3 correct answers to earn money. Try again!")
         
@@ -325,6 +327,7 @@ def render_pattern_memory():
                             player.add_money(40)
                             player.add_xp(8)
                             player.mini_games_completed.add("pattern_memory")
+                            mark_significant_action()  # Mark for mafia event check
                             show_success("Perfect! You earned $40! 🎉")
                         else:
                             show_error("Wrong pattern! Try again.")
@@ -429,6 +432,7 @@ def render_code_breaker():
                 player.add_money(reward)
                 player.add_xp(15)
                 player.mini_games_completed.add("code_breaker")
+                mark_significant_action()  # Mark for mafia event check
                 show_success(f"🎉 Code cracked! You earned ${reward}!")
             
             st.rerun()
@@ -505,6 +509,7 @@ def render_number_guesser():
                 player.add_money(reward)
                 player.add_xp(7)
                 player.mini_games_completed.add("number_guesser")
+                mark_significant_action()  # Mark for mafia event check
                 show_success(f"🎉 Correct! You earned ${reward}!")
                 st.session_state.ng_history.append(f"{guess} ✅ CORRECT!")
             elif guess < st.session_state.ng_number:

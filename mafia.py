@@ -9,6 +9,13 @@ def should_trigger_mafia_event():
     if not st.session_state.mafia_active:
         return False
     
+    # Only trigger after a significant action was performed
+    if not st.session_state.get('significant_action_performed', False):
+        return False
+    
+    # Reset the flag
+    st.session_state.significant_action_performed = False
+    
     # 15% chance after each significant action
     return random.random() < 0.15
 
