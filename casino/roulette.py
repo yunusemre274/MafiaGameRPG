@@ -70,15 +70,15 @@ def render_roulette():
             if "Number" in bet_type:
                 if bet_choice == result_number:
                     won = True
-                    multiplier = 2  # Return bet + 1x profit
+                    multiplier = 2  # Return bet + bet profit (1:1)
             elif "Red/Black" in bet_type:
                 if bet_choice == result_color:
                     won = True
-                    multiplier = 2  # Return bet + 1x profit
+                    multiplier = 2  # Return bet + bet profit (1:1)
             else:
                 if bet_choice == result_parity:
                     won = True
-                    multiplier = 2  # Return bet + 1x profit
+                    multiplier = 2  # Return bet + bet profit (1:1)
             
             player.reduce_hunger(5)
             mark_significant_action()  # Mark for mafia event check

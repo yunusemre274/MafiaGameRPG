@@ -51,19 +51,20 @@ def render_dice():
             mark_significant_action()  # Mark for mafia event check
             
             if total == bet_number:
-                # Exact match - return bet + 1x profit (2x total)
+                # Exact match - return bet + bet profit (1:1)
                 winnings = bet_amount * 2
                 player.add_money(winnings)
                 player.casino_wins += 1
                 player.add_xp(25)
                 show_success(f"🎉 EXACT MATCH! Rolled {dice1} + {dice2} = {total}. Won ${bet_amount} profit!")
             elif abs(total - bet_number) == 1:
-                # Close match - return bet + 0.5x profit
+                # Close match - return bet + half bet profit
                 winnings = int(bet_amount * 1.5)
+                profit = winnings - bet_amount
                 player.add_money(winnings)
                 player.casino_wins += 1
                 player.add_xp(10)
-                show_info(f"Close! Rolled {dice1} + {dice2} = {total}. Won ${winnings - bet_amount} profit!")
+                show_info(f"Close! Rolled {dice1} + {dice2} = {total}. Won ${profit} profit!")
             else:
                 player.casino_losses += 1
                 show_error(f"Lost! Rolled {dice1} + {dice2} = {total}. Lost ${bet_amount}.")

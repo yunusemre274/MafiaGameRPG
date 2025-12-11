@@ -71,13 +71,12 @@ def render_horse_racing():
             mark_significant_action()  # Mark for mafia event check
             
             if winner == chosen_horse:
-                # Return bet + 1x profit (2x total)
+                # Return bet + bet profit (1:1)
                 winnings = bet_amount * 2
                 player.add_money(winnings)
                 player.casino_wins += 1
                 player.add_xp(20)
-                profit = winnings - bet_amount
-                st.session_state.race_result = f"✅ {winner} WINS! You won ${profit} profit!"
+                st.session_state.race_result = f"✅ {winner} WINS! You won ${bet_amount} profit!"
                 show_success(st.session_state.race_result)
             else:
                 player.casino_losses += 1
