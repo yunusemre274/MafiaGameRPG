@@ -70,7 +70,7 @@ def render_roulette():
             if "Number" in bet_type:
                 if bet_choice == result_number:
                     won = True
-                    multiplier = 36  # Return bet + 35x profit
+                    multiplier = 2  # Return bet + 1x profit
             elif "Red/Black" in bet_type:
                 if bet_choice == result_color:
                     won = True
