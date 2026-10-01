@@ -2,7 +2,7 @@
 
 class Player:
     def __init__(self):
-        self.money = 100
+        self.money = 1000
         self.hp = 100
         self.max_hp = 100
         self.hunger = 100
