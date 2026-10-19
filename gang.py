@@ -72,8 +72,9 @@ def render_gang():
     with col1:
         if st.button("👊 Recruit Member", use_container_width=True):
             if player.can_afford(GANG_MEMBER_COST):
-                player.remove_money(GANG_MEMBER_COST)
+                player.remove_money(GANG_MEMBER_COST, affect_stress=False)
                 player.gang_members += 1
+                player.change_stress(-12)
                 player.add_xp(15)
                 show_success(f"Recruited a gang member! You now have {player.gang_members} member(s).")
                 st.rerun()

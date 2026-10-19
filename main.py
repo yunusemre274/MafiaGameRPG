@@ -14,6 +14,8 @@ from gang import render_gang
 from casino.blackjack import render_blackjack
 from casino.roulette import render_roulette
 from casino.dice import render_dice
+from casino.coin_flip import render_coin_flip
+from social import render_social, update_social
 from casino.horse_racing import render_horse_racing
 from mini_games import (render_mini_games, render_card_memory, render_math_challenge,
                         render_pattern_memory, render_code_breaker, render_number_guesser)
@@ -32,11 +34,6 @@ initialize_game_state()
 def render_main_menu():
     """Render the main menu."""
     render_game_title()
-    
-    player = get_player()
-    
-    # Show stat panel
-    render_stat_panel()
     
     # Show warnings
     render_hunger_warning()
@@ -61,6 +58,10 @@ def render_main_menu():
             navigate_to("gang")
     
     with col2:
+        count = len(st.session_state.social_requests)
+        if menu_button(f"Sosyal ({count})", "📱", key="menu_social"):
+            navigate_to("social")
+
         if menu_button("Hospital", "🏥", key="menu_hospital"):
             navigate_to("hospital")
         
@@ -117,6 +118,9 @@ def render_casino_menu():
         if menu_button("Horse Racing", "🏇", key="casino_horse"):
             navigate_to("horse_racing")
     
+    if menu_button("Coin Flip · Yazı Tura", "🪙", key="casino_coin_flip"):
+        navigate_to("coin_flip")
+
     st.markdown("---")
     
     if menu_button("🏠 Back to Main Menu", key="casino_back"):
@@ -235,6 +239,7 @@ def render_game_over():
 
 def main():
     """Main application loop."""
+    check_death_conditions()
     # Check for game over
     if st.session_state.game_over:
         render_game_over()
@@ -244,14 +249,23 @@ def main():
     if activate_mafia_if_needed():
         st.toast("⚠️ The mafia is now watching you!", icon="🔫")
     
+    update_social()
+
+    # Check ordinary events before queued social raids so neither replaces the other.
+    if not st.session_state.mafia_event_pending and should_trigger_mafia_event():
+        st.session_state.normal_mafia_queued = True
+    if not st.session_state.mafia_event_pending:
+        if st.session_state.normal_mafia_queued:
+            st.session_state.normal_mafia_queued = False
+            trigger_mafia_event()
+        elif st.session_state.social_raids:
+            raid = st.session_state.social_raids.pop(0)
+            trigger_mafia_event(group_id=raid["group_id"], source="social", contact_id=raid["contact_id"])
+
+    render_stat_panel()
     # Render mafia popup if pending
     if render_mafia_popup():
         return  # Don't render other content while mafia popup is active
-    
-    # Check if mafia event should trigger
-    if should_trigger_mafia_event() and not st.session_state.mafia_event_pending:
-        trigger_mafia_event()
-        st.rerun()
     
     # Route to appropriate page
     page = st.session_state.current_page
@@ -264,6 +278,10 @@ def main():
         render_blackjack()
     elif page == "roulette":
         render_roulette()
+    elif page == "social":
+        render_social()
+    elif page == "coin_flip":
+        render_coin_flip()
     elif page == "dice":
         render_dice()
     elif page == "horse_racing":

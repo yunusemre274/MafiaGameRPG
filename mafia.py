@@ -19,10 +19,20 @@ def should_trigger_mafia_event():
     # 15% chance after each significant action
     return random.random() < 0.15
 
-def trigger_mafia_event():
+def trigger_mafia_event(group_id=None, source="normal", contact_id=None):
     """Trigger a mafia extortion event."""
     player = get_player()
     
+    groups = st.session_state.mafia_groups
+    group = next((g for g in groups if g['id'] == group_id), None) or random.choice(groups)
+    st.session_state.mafia_event_group = group['id']
+    st.session_state.mafia_event_source = source
+    player.change_stress(15 if source == 'social' else 10)
+    if contact_id is not None:
+        for contact in st.session_state.social_contacts:
+            if contact['id'] == contact_id:
+                contact['revealed'] = True
+
     # Calculate extortion amount (5-15% of current money)
     percentage = random.uniform(0.05, 0.15)
     extortion_amount = int(player.money * percentage)
@@ -38,6 +48,12 @@ def render_mafia_popup():
     
     player = get_player()
     demand = st.session_state.mafia_demand_amount
+    from social import group_contact_count
+    group = next((g for g in st.session_state.mafia_groups
+                  if g['id'] == st.session_state.mafia_event_group), st.session_state.mafia_groups[0])
+    st.subheader(f"🔫 {group['name']} · {group_contact_count(group['id'])}/{group['total']}")
+    if st.session_state.mafia_event_source == 'social':
+        st.warning('📍 Kabul ettiğin bir sosyal bağlantı konumunu paylaştı. Bu, normal haraçlara ek bir baskın!')
     
     st.markdown("""
         <div style='background: linear-gradient(135deg, #c31432 0%, #240b36 100%); 

@@ -11,6 +11,8 @@ class Player:
         self.xp = 0
         self.bodyguards = 0
         self.gang_members = 0
+        self.stress = 10.0
+        self.peak_money = self.money
         
         # Statistics
         self.total_actions = 0
@@ -63,15 +65,25 @@ class Player:
     def add_money(self, amount):
         """Add money to player."""
         self.money += amount
+        self.peak_money = max(self.peak_money, self.money)
+        self.change_stress(-min(30, amount / max(self.money, 1000) * 40))
     
-    def remove_money(self, amount):
+    def remove_money(self, amount, affect_stress=True):
         """Remove money from player."""
+        if affect_stress:
+            self.change_stress(min(20, amount / max(self.money, 1000) * 30))
         self.money = max(0, self.money - amount)
+
+    def change_stress(self, amount):
+        """Cosmetic only: never used in action, combat or casino probabilities."""
+        self.stress = max(0.0, min(100.0, self.stress + amount))
     
     def to_dict(self):
         """Convert player to dictionary for saving."""
         return {
             "money": self.money,
+            "stress": self.stress,
+            "peak_money": self.peak_money,
             "hp": self.hp,
             "hunger": self.hunger,
             "level": self.level,
@@ -87,6 +99,8 @@ class Player:
     def from_dict(self, data):
         """Load player from dictionary."""
         self.money = data.get("money", 100)
+        self.stress = max(0.0, min(100.0, data.get("stress", 10.0)))
+        self.peak_money = max(self.money, data.get("peak_money", self.money))
         self.hp = data.get("hp", 100)
         self.hunger = data.get("hunger", 100)
         self.level = data.get("level", 1)

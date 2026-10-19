@@ -70,8 +70,9 @@ def render_secure():
     with col1:
         if st.button("🛡️ Hire Bodyguard", use_container_width=True):
             if player.can_afford(BODYGUARD_COST):
-                player.remove_money(BODYGUARD_COST)
+                player.remove_money(BODYGUARD_COST, affect_stress=False)
                 player.bodyguards += 1
+                player.change_stress(-15)
                 player.add_xp(10)
                 show_success(f"Hired a bodyguard! You now have {player.bodyguards} bodyguard(s).")
                 st.rerun()

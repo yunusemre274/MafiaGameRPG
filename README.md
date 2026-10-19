@@ -1,164 +1,106 @@
 # Casino Mafia RPG 🎰🔫
 
-A 1D menu-based decision RPG inspired by New Star Soccer's career mode. Navigate through a criminal underworld using text menus, making strategic decisions to survive and prosper.
+New Star Soccer kariyer modundan esinlenen, Python ve Streamlit ile geliştirilmiş menü tabanlı bir karar RPG’si. Kumarhanede para kazan, yaşam giderlerini karşıla, mafya gruplarıyla mücadele et ve sosyal çevreni dikkatli kur.
 
-## 🎮 Game Features
+## Çalıştırma
 
-### Core Systems
-- **Player Stats**: Money, HP, Hunger, Level, XP
-- **Decision-Based Gameplay**: No maps, no movement - pure menu navigation
-- **Mafia System**: Extortion events, combat, and protection
-- **Gang Management**: Recruit members to fight the mafia
-- **Bodyguard Protection**: Hire permanent protection
+Python 3.10+ önerilir.
 
-### Casino Games
-1. **Blackjack** - Classic card game (2x payout)
-2. **Roulette** - Bet on numbers or colors (up to 35x)
-3. **Dice (Zar)** - Predict dice rolls (10x for exact match)
-4. **Horse Racing** - Bet on racing horses (3x payout)
-
-### Survival Mechanics
-- **Hunger System**: Must eat or lose HP
-- **HP Management**: Visit hospital to heal
-- **Market**: Buy food to survive
-- **Death Conditions**: HP reaches 0 OR money reaches $0 with active mafia
-
-### Progression
-- **Level System**: Gain XP from actions
-- **Money Thresholds**:
-  - $10,000: Mafia activates
-  - $25,000: Unlock Secure Building (bodyguards)
-  - $50,000: Unlock Gang Building
-
-## 🚀 How to Run
-
-1. **Install dependencies:**
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-```
-
-2. **Run the game:**
-```bash
 streamlit run main.py
 ```
 
-3. **Play in your browser** - Streamlit will open automatically
+Windows’ta sanal ortamı `.venv\Scripts\activate` ile etkinleştir. Oyun tarayıcıda açılır.
 
-## 🎯 How to Play
+## Temel döngü
 
-### Starting Out
-- You begin with $100, 100 HP, and 100 Hunger
-- Visit the **Market** to buy food
-- Try your luck at the **Casino** to earn money
-- Monitor your stats at the top panel
+- Başlangıç: **$1.000, 100 can, 100 tokluk, seviye 1**.
+- Kumarhane ve sokak işleri para kazandırır. Eylemler tokluğu azaltır; sıfır toklukta can kaybedersin.
+- Marketten yiyecek al, envanterden tüket. Hastanede tam tedavi $1.500.
+- $10.000’da mafya etkinleşir. Önemli eylemlerden sonra normal haraç ihtimali %15’tir.
+- $25.000’da koruma binası açılır. Koruma başına $5.000; her koruma gelen hasarı 5 azaltır ve ölmez.
+- $50.000’da çete binası açılır. Üye başına $3.000; üyeler çatışmada kaybedilebilir.
+- Eylemler XP kazandırır. Seviye eşiği `seviye × 100 XP`.
+- Can sıfırlanırsa veya mafya etkinken paran biterse oyun biter. Devam eden Blackjack elindeki bahis, el sonuçlanana kadar masada tutulur.
 
-### Survival Tips
-- Keep hunger above 0 (or you'll lose HP)
-- Save money for emergencies
-- Visit hospital when HP is low
-- Buy food regularly from the market
+## 📱 Sosyal ve mafya grupları
 
-### Mafia Encounters
-- Mafia activates at $10,000
-- Random extortion events (15% chance after actions)
-- **Options**:
-  - Pay: Safe but expensive
-  - Reject: Fight with gang (if available) or take damage
+**Sosyal $15.000’a ulaştığında kalıcı olarak açılır.** İlk bağlantı istekleri hemen gelir. Sonrakiler oyun eylemleriyle üretilir; ekranı yenilemek veya menülerde dolaşmak istek üretmez.
 
-### Combat System
-- **Bodyguards**: Reduce damage by 5 HP each (never die)
-- **Gang Members**: Fight mafia (die in combat)
-  - Level 1-4: Lose 1 member per mafia attacker
-  - Level 5+: Lose 2 members per mafia attacker
+- İstekler ağırlıklı olarak kadın profillerinden ve sana saldıran mafyaların düşmanlarından gelir.
+- Her yeni isteğin niyeti **%50 iyi / %50 kötü** olarak belirlenir. Mesajlar gerçek niyeti önceden açıklamaz.
+- İyi niyetli bağlantıyı kabul etmek $150–500 destek ve stres azalması sağlar.
+- Kötü niyetli bağlantıyı kabul etmek konumunu açığa çıkarır ve **normal haraçlara ek bir baskın** oluşturur. Reddetmek baskın oluşturmaz.
+- İstek gelme ihtimali $15.000’da eylem başına %30, her ek $15.000’da +10 puan; üst sınır %85. Parti büyüklüğü 1’den 5’e yükselir. Bekleyen istek sınırı 30.
+- Gruplar: **Karahan Ailesi (24), Kuzgunlar (18), Liman Kardeşliği (30)**.
+- Grup yanındaki `x/x`, **sosyal ağına kabul ettiğin grup üyesi / toplam grup üyesi** sayısıdır. Her grubun ağa sızabilecek üye sayısı sınırlıdır.
 
-### Winning Strategy
-1. Build up money through casino
-2. Buy food to maintain hunger
-3. Reach $25k → hire bodyguards
-4. Reach $50k → build gang
-5. Balance earning, spending, and survival
+## Kumarhane
 
-## 📁 Project Structure
+### Rulet
 
+Yeşil keçe masa, Avrupa sıralamasında tek sıfırlı 37 cepli çark, top ve animasyon. Fiş seçip masaya tıklayarak aynı turda birden fazla alana bahis koyabilirsin. Geri al ve temizleme desteklenir.
+
+| Bahis | Net kazanç oranı |
+| --- | --- |
+| Tek sayı | 35:1 |
+| Split (2 sayı) | 17:1 |
+| Street / Trio (3 sayı) | 11:1 |
+| Corner / İlk dört sayı | 8:1 |
+| Six line (6 sayı) | 5:1 |
+| Düzine / Sütun | 2:1 |
+| Kırmızı–siyah / Tek–çift / 1–18–19–36 | 1:1 |
+
+Kazanç ödemesine yatırılan bahis de eklenir. Örneğin $10 tek sayı bahsi tutarsa $360 toplam ödeme alınır. Sıfır, dış bahislerin tamamını kaybettirir. Split/corner için sayı kenarlarına ve kesişimlerine tıkla; six line ve sıfırlı kombinasyonlar için “Diğer bahisler” bölümünü kullan.
+
+Oyunun akıcılığı için **%12 RPG şans desteği** vardır: bu turlarda bahislerin kapsadığı sayılardan biri seçilir; diğer turlarda 0–36 eşit olasılıklıdır. Bu, gerçek kumarhanenin olasılıklarını temsil etmez. Çoklu bahislerden birinin tutması, turun toplamda kârlı olacağını garanti etmez.
+
+### Zar · Düşük / Yüksek
+
+İki adet altı yüzlü zar atılır. Her tur değişen **3–11** hedefinin altında mı üstünde mi kalınacağını tahmin et. Hedef aralığı her iki seçimin de mümkün kalmasını sağlar; 2 ve 14 hiçbir zaman hedef olmaz. Toplam hedefe eşitse bahis iade edilir. Kazanma ödemesi toplam **2×** bahistir.
+
+### Yazı Tura
+
+Yazı ve tura eşit **%50** olasılıklıdır. Kazanma ödemesi toplam **2×** bahistir.
+
+### Blackjack
+
+- Hit ve Stand; aslar 1 veya 11 değerinde sayılır.
+- Kazançta toplam **2×** ödeme, eşitlikte bahis iadesi.
+- **Double:** ilk iki kartta ek bahis yatırılır; elin bahsi ikiye katlanır ve oyuncu tek kart çeker. Bu oyunun özel kuralıyla krupiyer de yalnızca **bir ek kart** çeker.
+- **Split:** aynı rank’taki iki kart iki ele ayrılır (ör. 8/8 veya K/K). İkinci el için ilk bahis kadar ek ücret alınır; eller ayrı oynanır ve ayrı sonuçlanır. Tur başına bir Split desteklenir; Split sonrası Double yapılabilir.
+- Tüm eller aynı krupiyer eliyle karşılaştırılır. Herhangi bir elde Double yapıldıysa, tüm eller bittikten sonra krupiyere tek ek kart kuralı uygulanır; aksi halde krupiyer 17’ye kadar çeker.
+- Sonuç yalnızca bir kez ödenir; sonuç ekranını tekrar görüntülemek ek para vermez.
+
+At yarışı da mevcuttur; kazanan at için toplam ödeme 2× bahistir. Tüm casino oyunlarında minimum bahis $10’dur.
+
+## Durum barları ve stres
+
+Tüm ekranlarda para, can, tokluk, seviye/XP, koruma, çete ve stres görünür. Koruma barı 10 kişide dolar; ek korumaların etkisi sürer. Seviye barı sonraki seviyeye XP ilerlemesini gösterir.
+
+Stres 0–100 aralığındadır: para harcama/kaybetme ve mafya baskınları artırır; para kazanma, destekçiler, koruma ve çete alımı azaltır. **Yalnızca görseldir; kararları, hasarı veya kazanma olasılıklarını etkilemez.**
+
+## Kayıt
+
+Ana menüde Save/Load düğmeleriyle `savegame.json` kullanılır. Oyuncu, stres, envanter, sosyal istekler/bağlantılar, gruplar ve bekleyen baskınlar kaydedilir. Önceki sürüm kayıtları yeni alanlara varsayılan değerler verilerek yüklenir.
+
+## Dosyalar
+
+- `main.py`: sayfalar ve ana oyun akışı
+- `player.py`, `game_state.py`: oyuncu ve oturum durumu
+- `social.py`, `mafia.py`: bağlantılar, gruplar, baskınlar ve çatışma
+- `ui_components.py`: ortak durum barları ve arayüz yardımcıları
+- `casino/`: Blackjack, rulet, zar, yazı tura ve at yarışı
+- `casino/roulette_frontend/index.html`: etkileşimli rulet masası ve SVG çark
+- `market.py`, `hospital.py`, `secure.py`, `gang.py`, `inventory.py`: ihtiyaçlar ve ilerleme
+- `save_load.py`: JSON kayıt ve eski kayıtların uyarlanması
+- `tests/`: para, olasılık kuralları, sosyal baskınlar ve kayıt regresyon testleri
+
+## Test
+
+```bash
+python -m unittest discover -s tests -v
 ```
-casino_mafia_rpg/
-├── main.py              # Entry point & navigation
-├── player.py            # Player class & stats
-├── game_state.py        # Session state management
-├── ui_components.py     # Reusable UI elements
-├── mafia.py             # Mafia events & combat
-├── market.py            # Food shop
-├── hospital.py          # Healing service
-├── secure.py            # Bodyguard hiring
-├── gang.py              # Gang recruitment
-├── inventory.py         # Item management
-├── save_load.py         # Save/Load system
-├── sound.py             # Audio system (placeholder)
-├── casino/
-│   ├── blackjack.py     # Blackjack game
-│   ├── roulette.py      # Roulette game
-│   ├── dice.py          # Dice (Zar) game
-│   └── horse_racing.py  # Horse racing game
-└── requirements.txt     # Dependencies
-```
-
-## 💾 Save System
-
-- **Save Button**: Save your progress to `savegame.json`
-- **Load Button**: Resume from saved game
-- Saves all stats, inventory, and progress
-
-## 🎨 UI Features
-
-- Gradient stat panels
-- Color-coded warnings
-- Responsive button layout
-- Clean menu navigation
-- Visual feedback for all actions
-
-## 🔧 Technical Details
-
-- **Framework**: Streamlit
-- **Language**: Python 3.7+
-- **Architecture**: Modular, menu-driven
-- **State Management**: Streamlit session state
-- **Save Format**: JSON
-
-## 📝 Game Balance
-
-### Costs
-- Food: $15 - $100
-- Hospital: $1,500
-- Bodyguard: $5,000
-- Gang Member: $3,000
-
-### Casino Payouts
-- Blackjack: 2x
-- Roulette Number: 35x
-- Roulette Color: 2x
-- Dice Exact: 10x
-- Dice Close: 3x
-- Horse Racing: 3x
-
-### XP Rewards
-- Small actions: 2-5 XP
-- Casino wins: 10-25 XP
-- Combat survival: 30 XP
-- Level up threshold: Level × 100 XP
-
-## 🎯 Future Enhancements
-
-- Real sound effects
-- More casino games
-- Additional items and boosts
-- Multiple save slots
-- Achievement system
-- Difficulty modes
-
-## 📄 License
-
-This is a demonstration project. Feel free to modify and extend!
-
----
-
-**Enjoy the game! Good luck surviving the mafia! 🎰🔫**

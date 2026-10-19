@@ -26,6 +26,25 @@ def initialize_game_state():
         # Flag to track if a significant action was performed (for mafia event triggering)
         st.session_state.significant_action_performed = False
 
+    # Defaults also migrate sessions started before social features were added.
+    defaults = {
+        "mafia_event_pending": False, "mafia_demand_amount": 0,
+        "significant_action_performed": False,
+        "blackjack_state": {}, "roulette_state": {},
+        "social_unlocked": False, "social_requests": [], "social_contacts": [],
+        "social_next_id": 1, "social_last_action": 0, "social_raids": [],
+        "mafia_groups": [
+            {"id": "karahan", "name": "Karahan Ailesi", "total": 24},
+            {"id": "kuzgun", "name": "Kuzgunlar", "total": 18},
+            {"id": "liman", "name": "Liman Kardeşliği", "total": 30},
+        ],
+        "mafia_event_group": None, "mafia_event_source": "normal",
+        "normal_mafia_queued": False,
+    }
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
+
 def navigate_to(page):
     """Navigate to a different page."""
     st.session_state.current_page = page
@@ -44,7 +63,10 @@ def check_death_conditions():
         st.session_state.game_over_reason = "Your HP reached 0. You died."
         return True
     
-    if player.money <= 0 and st.session_state.mafia_active:
+    # Blackjack stakes are held by the table until every hand is settled.
+    blackjack = st.session_state.get("blackjack_state", {})
+    money_on_table = blackjack.get("active") and not blackjack.get("settled")
+    if player.money <= 0 and st.session_state.mafia_active and not money_on_table:
         st.session_state.game_over = True
         st.session_state.game_over_reason = "You ran out of money. The mafia killed you."
         return True
