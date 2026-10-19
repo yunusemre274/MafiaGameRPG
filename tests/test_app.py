@@ -11,6 +11,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class AppTests(unittest.TestCase):
+    def setUp(self):
+        # Animation is exercised in Chromium; AppTest supplies its completion event.
+        self.coin_component = patch('casino.coin_flip._coin', return_value=None)
+        self.mock_coin = self.coin_component.start()
+        self.addCleanup(self.coin_component.stop)
+
     def app(self):
         return AppTest.from_file(str(ROOT / 'main.py')).run()
 
@@ -35,6 +41,11 @@ class AppTests(unittest.TestCase):
                 app.session_state.current_page = page
                 app.run()
                 next(b for b in app.button if b.label == label).click().run()
+                if page == 'coin_flip':
+                    self.assertEqual(app.session_state.player.total_actions, 0)
+                    self.assertTrue(next(b for b in app.button if b.label == label).disabled)
+                    self.mock_coin.return_value = dict(round_id=app.session_state.coin_pending['id'], finished=True)
+                    app.run()
                 self.assert_clean(app)
                 snapshot = app.session_state.player.to_dict()
                 self.assertEqual(snapshot['total_actions'], 1)

@@ -14,7 +14,7 @@ from game_state import initialize_game_state, check_death_conditions
 from casino import blackjack as bj
 from casino import roulette as roulette
 from casino.dice import next_target, dice_outcome
-from casino.coin_flip import flip_coin
+from casino.coin_flip import flip_coin, finish_flip
 import social
 import mafia
 import save_load
@@ -176,6 +176,16 @@ class GameTests(unittest.TestCase):
         with patch('casino.coin_flip.random.choice', return_value='Yazı') as choice:
             self.assertEqual(flip_coin(), 'Yazı')
             choice.assert_called_once_with(['Yazı','Tura'])
+
+    def test_coin_settles_matching_animation_once(self):
+        self.state.coin_pending = dict(id='round-1', face='Yazı', won=True, bet=50)
+        self.assertFalse(finish_flip('stale-round'))
+        self.assertEqual(self.player.money, 1000)
+        self.assertTrue(finish_flip('round-1'))
+        self.assertEqual(self.player.money, 1050)
+        self.assertEqual(self.player.total_actions, 1)
+        self.assertFalse(finish_flip('round-1'))
+        self.assertEqual(self.player.money, 1050)
 
     def test_social_unlock_persists_and_rerenders_do_not_farm_requests(self):
         with patch.object(st, 'toast'):

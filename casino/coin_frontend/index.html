@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box}body{margin:0;background:transparent;font-family:system-ui,sans-serif}.scene{height:290px;display:flex;flex-direction:column;align-items:center;justify-content:center;perspective:1000px;overflow:hidden}.coin{width:200px;height:200px;position:relative;transform-style:preserve-3d;will-change:transform}.face{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:radial-gradient(circle at 30% 22%,#fff4b3 0%,#f7d76c 27%,#dba52e 64%,#966412 100%);border:7px solid #e9bd50;outline:2px solid #aa791d;box-shadow:inset 0 0 0 3px #fff1a0,inset 0 0 0 7px #b68524,inset 0 0 23px #895e2344,0 12px 25px #0003;display:grid;place-items:center}.face:after{content:"";position:absolute;inset:8px;border:2px dashed #ac7b26;border-radius:50%;pointer-events:none}.back{transform:rotateY(180deg)}.face svg{width:82%;height:82%;overflow:visible}.shadow{width:135px;height:12px;border-radius:50%;background:radial-gradient(ellipse,#0005,transparent 70%);margin-top:19px}.status{height:22px;margin-top:10px;color:#947028;font-size:13px;letter-spacing:.5px}.spinning .face{box-shadow:inset 0 0 0 3px #fff1a0,inset 0 0 0 7px #b68524,inset 0 0 23px #895e2344,5px 0 0 #ae7a1e}
+</style></head><body>
+<div class="scene" id="scene"><div class="coin" id="coin" role="img" aria-label="Sarı yazı tura parası">
+<div class="face front" data-face="Yazı"><svg viewBox="0 0 160 160" aria-label="5 euro"><g fill="#9c6b17" opacity=".8"><path d="m80 9 2 6 6 .2-5 4 1.5 6-4.5-3.7-5 3.7 1.7-6-5-4 6-.2z"/><circle cx="39" cy="24" r="2"/><circle cx="18" cy="55" r="2"/><circle cx="18" cy="101" r="2"/><circle cx="39" cy="134" r="2"/><circle cx="121" cy="24" r="2"/><circle cx="142" cy="55" r="2"/><circle cx="142" cy="101" r="2"/><circle cx="121" cy="134" r="2"/></g><text x="80" y="108" text-anchor="middle" font-family="Georgia,serif" font-size="104" font-weight="bold" fill="#8a6018" stroke="#fff0a4" stroke-width=".65">5</text><text x="80" y="134" text-anchor="middle" font-family="Georgia,serif" font-size="22" letter-spacing="4" font-weight="bold" fill="#805716">EURO</text></svg></div>
+<div class="face back" data-face="Tura"><svg viewBox="0 0 160 180" aria-label="Playboy tavşan logosu"><path fill="#211b10" d="M66 80C49 62 28 17 42 9C58 0 75 49 82 67C82 39 82 3 97 5C116 7 103 57 96 76C116 77 127 87 128 100L145 109Q152 116 138 121L127 123Q123 142 101 146L75 143Q51 133 51 111Q51 91 66 80Z"/><ellipse cx="113" cy="100" rx="3.6" ry="4.7" fill="#f4d16a"/><path fill="#211b10" d="M79 151L58 142L58 169L81 159L104 170L104 143L84 151Z"/><ellipse cx="81" cy="155" rx="6" ry="8" fill="#211b10"/></svg></div>
+</div><div class="shadow"></div><div class="status" id="status" aria-live="polite"></div></div>
+<script>
+let activeId=null,lastAngle=0,animation=null;
+const coin=document.getElementById('coin'),scene=document.getElementById('scene'),status=document.getElementById('status');
+function post(type,extra={}){window.parent.postMessage({isStreamlitMessage:true,type,...extra},'*')}
+function setFace(face){lastAngle=face==='Tura'?180:0;coin.style.transform=`rotateY(${lastAngle}deg)`;coin.setAttribute('aria-label',face==='Tura'?'Sarı para · Playboy tavşan logosu':'Sarı para · 5 euro')}
+window.addEventListener('message',event=>{
+ if(event.data.type!=='streamlit:render')return;
+ const args=event.data.args;
+ if(args.spinning){
+  if(activeId===args.round_id)return;
+  activeId=args.round_id;
+  if(animation)animation.cancel();
+  const target=args.face==='Tura'?180:0,start=lastAngle,end=start+2160+((target-start%360+360)%360);
+  scene.classList.add('spinning');status.textContent='Para dönüyor…';coin.setAttribute('aria-label','Para dönüyor');
+  animation=coin.animate([{transform:`translateY(0) rotateY(${start}deg)`},{transform:`translateY(-12px) rotateY(${start+(end-start)*.6}deg)`,offset:.5},{transform:`translateY(0) rotateY(${end}deg)`}],{duration:3000,easing:'cubic-bezier(.15,.4,.3,1)',fill:'forwards'});
+  const id=activeId;
+  animation.onfinish=()=>{
+   if(activeId!==id)return;
+   setFace(args.face);animation.cancel();animation=null;scene.classList.remove('spinning');status.textContent='';
+   post('streamlit:setComponentValue',{value:{round_id:id,finished:true},dataType:'json'});
+  };
+ }else{
+  if(animation){animation.cancel();animation=null}
+  activeId=null;scene.classList.remove('spinning');status.textContent='';setFace(args.face);
+ }
+ post('streamlit:setFrameHeight',{height:290});
+});
+post('streamlit:componentReady',{apiVersion:1});post('streamlit:setFrameHeight',{height:290});
+</script></body></html>

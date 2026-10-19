@@ -65,6 +65,7 @@ Oyunun akıcılığı için **%12 RPG şans desteği** vardır: bu turlarda bahi
 ### Yazı Tura
 
 Yazı ve tura eşit **%50** olasılıklıdır. Kazanma ödemesi toplam **2×** bahistir.
+Sarı para her atışta **3 saniye** döner: yazı yüzünde **5 EURO**, tura yüzünde **Playboy tavşan logosu** bulunur. Sonuç ve ödeme dönüş tamamlandıktan sonra gösterilir.
 
 ### Blackjack
 
