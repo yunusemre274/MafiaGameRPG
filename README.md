@@ -56,7 +56,7 @@ Yeşil keçe masa, Avrupa sıralamasında tek sıfırlı 37 cepli çark, top ve 
 
 Kazanç ödemesine yatırılan bahis de eklenir. Örneğin $10 tek sayı bahsi tutarsa $360 toplam ödeme alınır. Sıfır, dış bahislerin tamamını kaybettirir. Split/corner için sayı kenarlarına ve kesişimlerine tıkla; six line ve sıfırlı kombinasyonlar için “Diğer bahisler” bölümünü kullan.
 
-Oyunun akıcılığı için **%12 RPG şans desteği** vardır: bu turlarda bahislerin kapsadığı sayılardan biri seçilir; diğer turlarda 0–36 eşit olasılıklıdır. Bu, gerçek kumarhanenin olasılıklarını temsil etmez. Çoklu bahislerden birinin tutması, turun toplamda kârlı olacağını garanti etmez.
+**0–36 arasındaki 37 sayı eşit olasılıklıdır; bahis yapılan sayılara ek şans verilmez.** Tek sayı bahsinin kazanma ihtimali 1/37 (yaklaşık %2,70), kırmızı/siyah gibi dış bahislerin 18/37’dir (yaklaşık %48,65). Standart ödemelerle uzun vadeli ortalama geri dönüş %97,30’dur; bu her turun yatırılan bahis tutarı üzerinden hesaplanır. Çoklu bahisler bu oranı yükseltmez ve tüm sayıları kaplamak garantili kâr sağlamaz.
 
 ### Zar · Düşük / Yüksek
 

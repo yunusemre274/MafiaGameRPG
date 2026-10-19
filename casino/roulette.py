@@ -8,7 +8,6 @@ from ui_components import render_section_header
 
 RED_NUMBERS = {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36}
 WHEEL_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26]
-LUCKY_CHANCE = 0.12
 _table = components.declare_component('mafia_roulette_table', path=str(Path(__file__).parent / 'roulette_frontend'))
 
 
@@ -67,11 +66,9 @@ def validate_bets(raw_bets, balance):
     return bets
 
 
-def spin_number(bets):
-    # RPG assist: small explicit chance of choosing a number covered by a bet.
-    # This does not read stress, HP, level or any other player attribute.
-    covered = sorted({n for bet in bets for n in CATALOG[bet['id']]['numbers']})
-    return random.choice(covered) if random.random() < LUCKY_CHANCE else random.randint(0,36)
+def spin_number():
+    # Each pocket has the same probability, independent of wagers or player stats.
+    return random.randint(0, 36)
 
 
 def total_return(bets, number):
@@ -83,7 +80,7 @@ def play_spin(raw_bets):
     player = get_player()
     bets = validate_bets(raw_bets, player.money)
     stake = sum(b['amount'] for b in bets)
-    number = spin_number(bets)
+    number = spin_number()
     payout = total_return(bets, number)
     player.remove_money(stake)
     if payout:
@@ -102,8 +99,8 @@ def play_spin(raw_bets):
 
 def render_roulette():
     render_section_header('Rulet · Avrupa Masası', '🎡')
-    st.caption('Tek sıfırlı masa · Birden fazla alana fiş koyabilirsin. RPG şans desteği: turların %12’sinde '
-               'bahislerinin kapsadığı bir sayı seçilir; diğer turlarda 0–36 eşit olasılıklıdır.')
+    st.caption('Tek sıfırlı masa · 0–36 arasındaki her sayı eşit olasılıklıdır. '
+               'Birden fazla alana fiş koyabilirsin. Sıfır geldiğinde dış bahisler kaybeder.')
     player = get_player()
     state = st.session_state.setdefault('roulette_state', {})
     event = _table(balance=player.money, catalog=CATALOG, wheel=WHEEL_ORDER,

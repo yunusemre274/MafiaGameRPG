@@ -3,6 +3,7 @@
 Run: .venv/bin/python -m unittest discover -s tests -v
 """
 import copy
+from fractions import Fraction
 import json
 import tempfile
 import unittest
@@ -155,11 +156,31 @@ class GameTests(unittest.TestCase):
                 roulette.validate_bets(bets, self.player.money)
         self.assertEqual(self.player.money, 1000)
 
-    def test_roulette_assist_selects_covered_numbers(self):
-        with patch.object(roulette.random, 'random', return_value=0):
-            self.assertEqual(roulette.spin_number([dict(id='n7',amount=10)]), 7)
-        with patch.object(roulette.random, 'random', return_value=0.99), patch.object(roulette.random, 'randint', return_value=0):
-            self.assertEqual(roulette.spin_number([dict(id='n7',amount=10)]), 0)
+    def test_roulette_samples_all_pockets_without_bet_bias(self):
+        for number in range(37):
+            with patch.object(roulette.random, 'randint', return_value=number) as draw:
+                self.assertEqual(roulette.spin_number(), number)
+                draw.assert_called_once_with(0, 36)
+
+    def test_roulette_expected_return_is_balanced_for_every_bet_and_combinations(self):
+        portfolios = [[dict(id=key, amount=10)] for key in roulette.CATALOG]
+        portfolios += [
+            [dict(id='n7', amount=500), dict(id='red', amount=100), dict(id='dozen0', amount=30)],
+            [dict(id='red', amount=10), dict(id='black', amount=10)],
+            [dict(id=f'n{number}', amount=10) for number in range(37)],
+        ]
+        for bets in portfolios:
+            with self.subTest(bets=bets):
+                stake = sum(bet['amount'] for bet in bets)
+                average_return = Fraction(sum(roulette.total_return(bets, n) for n in range(37)), 37)
+                self.assertEqual(average_return, Fraction(36, 37) * stake)
+                self.assertLess(average_return, stake)
+
+    def test_roulette_covering_every_number_does_not_guarantee_profit(self):
+        bets = [dict(id=f'n{number}', amount=10) for number in range(37)]
+        stake = sum(bet['amount'] for bet in bets)
+        for number in range(37):
+            self.assertEqual(roulette.total_return(bets, number) - stake, -10)
 
     def test_dice_targets_change_and_both_sides_are_possible(self):
         for previous in range(3,12):
@@ -253,10 +274,10 @@ class GameTests(unittest.TestCase):
         stress = self.player.stress
         self.player.add_money(400)
         self.assertLess(self.player.stress,stress)
-        with patch.object(roulette.random, 'random', return_value=0.99), patch.object(roulette.random, 'randint', return_value=7):
+        with patch.object(roulette.random, 'randint', return_value=7):
             for value in [0,50,100]:
                 self.player.stress=value
-                self.assertEqual(roulette.spin_number([dict(id='n1',amount=10)]),7)
+                self.assertEqual(roulette.spin_number(),7)
 
     def test_save_load_preserves_social_stress_and_queued_raids(self):
         self.state.social_unlocked=True
